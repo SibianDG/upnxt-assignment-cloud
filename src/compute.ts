@@ -24,10 +24,12 @@ export function compute(game: Game): number {
       } else {
         score += turn[2]
       }
+      if (turn[0] !== 10 && turn[1] !== 10 && turn[0]+turn[1] === 10){
+        score += turn[2]
+      }
     }
     console.log(`Score ${score} op index ${index}`)
   })
-
   return score;
 }
 
