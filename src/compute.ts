@@ -5,28 +5,30 @@ export function compute(game: Game): number {
   let score: number = 0;
   game.forEach((turn: Array<number>, index: number) => {
     if (index < 9){
-      score += turn[0] + turn[1];
+      score += calculateScoreTurn(turn);
       if (isStrike(turn)){
-        if (index+1 < 9)
-          score += calculateScoreTurn(game[index+1]);
-        if (index+2 < 9)
-          score += calculateScoreTurn(game[index+2]);
-      } else if(isSpare(turn) ) {
+        if (game[index+1][0] === 10){
+          score += 10
+          if (index+2 > 9)
+            score += game[index+1][1]
+          else
+            score += game[index+2][0]
+         } else {
+          if (index+1 === 9)
+            score += game[index+1][0] + game[index+1][1];
+          else
+            score += calculateScoreTurn(game[index+1]);
+        }
+      } else if(isSpare(turn) )
         score += game[index + 1][0];
-      }
     } else if (index === 9) {
-      score += turn[0] + turn[1] + turn[2];
-      if (turn[0] === 10){
-        score += turn[1] + turn[2]
-      }
-      if (turn[1] === 10){
-        score += turn[2]
-      } else {
-        score += turn[2]
-      }
-      if (turn[0] !== 10 && turn[1] !== 10 && turn[0]+turn[1] === 10){
-        score += turn[2]
-      }
+      score += calculateScoreTurn(turn);
+      // if (turn[0] === 10)
+      //   score += turn[1] + turn[2]
+      // if (turn[1] === 10)
+      //   score += turn[2]
+      // if (turn[0] !== 10 && turn[1] !== 10 && turn[0]+turn[1] === 10)
+      //   score += turn[2]
     }
     console.log(`Score ${score} op index ${index}`)
   })
@@ -42,10 +44,7 @@ function isStrike(turn: Array<number>): boolean {
 }
 
 function calculateScoreTurn(turn: Array<number>): number {
-  if (turn.length === 3)
-    return turn[0]+turn[1]+turn[2];
-  else
-    return turn[0]+turn[1];
+  return turn.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0);
 }
 
 

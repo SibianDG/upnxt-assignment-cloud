@@ -8,30 +8,51 @@ export const app = express();
 app.use(express.json());
 
 app.post("/compute", (request, response) => {
+  console.log("YO")
   const gameRequest = request.body.game;
-  let game: Game;
+  let valid: boolean = true;
+
   try {
-    game = gameRequest;
-    if (game.length !== 10)
-      throw new Error('Bad request')
-    gameRequest.forEach((e: Array<number>, i: number) => {
-      console.log(e + " --- " + i)
-      if (i < 9) {
-        if (e.length !== 2)
-          throw new Error('Bad request')
-      } else if (i === 9){
-        if (e.length < 2 || e.length > 3)
-          throw new Error('Bad request')
-      } else {
-        throw new Error('Bad request')
-      }
-    })
+    checkInput(gameRequest);
   } catch (error) {
     response.status(400)
-    response.send(error.message);
+    response.send({"error": error.message});
+    valid = false;
   }
 
-  const score = compute(game);
-  response.status(200)
-  response.send({"score": score});
+  if (valid) {
+    const score = compute(gameRequest);
+    response.status(200)
+    response.send({"score": score});
+  }
 });
+
+function checkInput(inputGame: any): void {
+    const game: Game = inputGame as Game;
+    if (game.length !== 10)
+      throw new Error('Bad request')
+    inputGame.forEach((e: Array<number>, i: number) => {
+      if (i < 9) {
+        if (e.length !== 2)
+          throw new Error('Bad request');
+      } else if (i === 9){
+        if (e.length < 2 || e.length > 3)
+          throw new Error('Bad request');
+        if (e[0]+e[1] < 10 && e[2] !== 0)
+          throw new Error('Bad request');
+      } else {
+        throw new Error('Bad request');
+      }
+      checkScore(e);
+    })
+}
+
+function checkScore(turn: Array<number>): void {
+  const score: number = turn.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0);
+  if((score > 10 && turn.length === 2) || (score > 30 && turn.length === 3))
+    throw new Error('Bad request');
+  turn.forEach(e => {
+    if (e > 10)
+      throw new Error('Bad request');
+  })
+}
