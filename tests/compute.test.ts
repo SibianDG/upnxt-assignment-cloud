@@ -77,3 +77,22 @@ it("random game - score 170", () => {
 
   expect(score).toBe(170);
 });
+
+it("random game - score 100", () => {
+  const input100: Game = [
+    [5, 2],
+    [3, 5],
+    [5, 0],
+    [4, 1],
+    [9, 1],
+    [5, 1],
+    [7, 1],
+    [10, 0],
+    [5, 2],
+    [10, 10, 2],
+  ];
+
+  const score = compute(input100);
+
+  expect(score).toBe(100);
+});
