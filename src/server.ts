@@ -8,7 +8,6 @@ export const app = express();
 app.use(express.json());
 
 app.post("/compute", (request, response) => {
-  console.log("YO")
   const gameRequest = request.body.game;
   let valid: boolean = true;
 
@@ -35,6 +34,8 @@ function checkInput(inputGame: any): void {
       if (i < 9) {
         if (e.length !== 2)
           throw new Error('Bad request');
+        if (e[0] === 10 &&e[1] > 0)
+          throw new Error('Bad request');
       } else if (i === 9){
         if (e.length < 2 || e.length > 3)
           throw new Error('Bad request');
@@ -48,11 +49,11 @@ function checkInput(inputGame: any): void {
 }
 
 function checkScore(turn: Array<number>): void {
-  const score: number = turn.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0);
-  if((score > 10 && turn.length === 2) || (score > 30 && turn.length === 3))
-    throw new Error('Bad request');
   turn.forEach(e => {
     if (e > 10)
       throw new Error('Bad request');
   })
+  const score: number = turn.reduce((previousValue: number, currentValue: number) => previousValue + currentValue, 0);
+  if((score > 10 && turn.length === 2) || (score > 30 && turn.length === 3))
+    throw new Error('Bad request');
 }
